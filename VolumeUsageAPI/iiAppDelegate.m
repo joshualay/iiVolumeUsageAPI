@@ -22,6 +22,7 @@
     self.viewController = [[iiViewController alloc] initWithNibName:@"iiViewController" bundle:nil];
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

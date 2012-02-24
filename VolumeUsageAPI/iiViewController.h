@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "iiVolumeUsageProvider.h"
 
-@interface iiViewController : UIViewController
+@interface iiViewController : UIViewController <iiVolumeUsageProviderDelegate> {    
+    IBOutlet UILabel *_label;
+}
 
 @end

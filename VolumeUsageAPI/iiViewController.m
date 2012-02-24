@@ -8,6 +8,10 @@
 
 #import "iiViewController.h"
 
+#import "iiVolumeUsageProvider.h"
+#import "iiUsagePeriod.h"
+#import "iiUsageUnit.h"
+
 @implementation iiViewController
 
 - (void)didReceiveMemoryWarning
@@ -22,33 +26,23 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
+    
+    iiVolumeUsageProvider *volumeUsageProvider = [[iiVolumeUsageProvider alloc] init];
+    [volumeUsageProvider retrieveUsage];
+    
+    iiVolumeUsage *volumeUsage = volumeUsageProvider.volumeUsage;
+    
+    NSMutableString *textString = [[NSMutableString alloc] init];
+    for (iiUsagePeriod *period in volumeUsage.volumeUsageBreakdown) {
+        [textString appendString:period.period];
+        for (iiUsageUnit *unit in period.usageUnitList) {
+            [textString appendString:[NSString stringWithFormat:@" : %02f", [unit getMegaBytes]]];
+        }
+    }
+    
+    self->_label.textAlignment = UITextAlignmentCenter;
+    self->_label.numberOfLines = 0;
+    self->_label.text = textString;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
