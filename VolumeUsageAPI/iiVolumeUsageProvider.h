@@ -51,6 +51,7 @@
     iiAccountInfo *_accountInfo;
     iiVolumeUsage *_volumeUsage;
     iiConnection *_connection;
+    iiIpAddress *_ip;
 
     iiTraffic *_trafficUnit;
     iiUsagePeriod *_usagePeriod;

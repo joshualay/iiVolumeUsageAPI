@@ -16,6 +16,6 @@
 
 @implementation iiConnection
 
-@synthesize ip;
+@synthesize ipList;
 
 @end

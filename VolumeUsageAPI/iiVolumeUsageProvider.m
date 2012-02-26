@@ -203,6 +203,20 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
             }
         }
     }
+    
+    if ([elementName isEqualToString:XMLElementConnections]) {
+        self->_stateTracking = XMLElementConnections;
+        self->_connection = [[iiConnection alloc] init];
+        self->_connection.ipList = [[NSMutableArray alloc] init];
+        return;
+    }
+    
+    if ([self->_stateTracking isEqualToString:XMLElementConnections]) {
+        if ([elementName isEqualToString:XMLElementIp]) {
+            self->_ip = [[iiIpAddress alloc] init];
+            self->_ip.connectedSinceDate = [attributeDict objectForKey:XMLElementOnSince];
+        }
+    }
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
@@ -288,6 +302,13 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
             self->_stateTracking = @"";
         
         return;
+    }
+    
+    if ([self->_stateTracking isEqualToString:XMLElementConnections]) {
+        if ([elementName isEqualToString:XMLElementIp]) {
+            self->_ip.ipAddress = currentStringValue;
+            [self->_connection.ipList addObject:self->_ip];
+        }
     }
     
     if ([self->_stateTracking isEqualToString:elementName]) {

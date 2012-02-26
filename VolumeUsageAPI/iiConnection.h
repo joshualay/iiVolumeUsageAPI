@@ -17,6 +17,6 @@
 
 @interface iiConnection : NSObject
 
-@property (nonatomic, strong) iiIpAddress *ip;
+@property (nonatomic, strong) NSMutableArray *ipList;
 
 @end

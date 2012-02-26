@@ -28,3 +28,6 @@ NSString *const XMLElementDaysSoFar = @"days_so_far";
 NSString *const XMLElementDaysRemaining = @"days_remaining";
 NSString *const XMLElementQuotaAllocation = @"quota_allocation";
 NSString *const XMLElementIsShaped = @"is_shaped";
+NSString *const XMLElementConnections = @"connections";
+NSString *const XMLElementIp = @"ip";
+NSString *const XMLElementOnSince = @"on_since";

@@ -28,4 +28,6 @@ extern NSString *const XMLElementDaysSoFar;
 extern NSString *const XMLElementDaysRemaining;
 extern NSString *const XMLElementQuotaAllocation;
 extern NSString *const XMLElementIsShaped;
-
+extern NSString *const XMLElementConnections;
+extern NSString *const XMLElementIp;
+extern NSString *const XMLElementOnSince;

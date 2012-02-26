@@ -32,15 +32,10 @@
     
     iiFeed *feed = [volumeUsageProvider retrieveUsage];
     
-    iiVolumeUsage *volumeUsage = feed.volumeUsage;
+    iiConnection *connection = feed.connection;
+    iiIpAddress *ipAddress = [connection.ipList lastObject];
     
-    NSMutableString *textString = [[NSMutableString alloc] init];
-    for (iiUsagePeriod *period in volumeUsage.volumeUsageBreakdown) {
-        [textString appendString:period.period];
-        for (iiUsageUnit *unit in period.usageUnitList) {
-            [textString appendString:[NSString stringWithFormat:@" : %02f", [unit getMegaBytes]]];
-        }
-    }
+    NSString *textString = [NSString stringWithFormat:@"%@, %@", ipAddress.connectedSinceDate, ipAddress.ipAddress];
     
     self.label.textAlignment = UITextAlignmentCenter;
     self.label.numberOfLines = 0;
