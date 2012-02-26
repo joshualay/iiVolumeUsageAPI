@@ -10,12 +10,15 @@
 
 // Constants
 #import "Errors.h"
-
+#import "XMLElements.h"
 
 @implementation iiVolumeUsageProvider
 
 @synthesize error       = _error;
 @synthesize delegate    = _delegate;
+
+NSString *const kCacheName = @"VolumeUsageProviderCache";
+NSString *const kCacheFeedKey = @"iiFeedKey";
 
 NSString *kStateVolumeUsage = @"top_level_volume_usage";
 NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volume_usage_xml.cgi?action=login&username=%@&password=%@";
@@ -27,7 +30,9 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         self->_error = nil;
         self->_volumeUsage = nil;
         self->_accountInfo = nil;
-        self->_feed = nil;
+        self->_lastRetrieved = nil;
+        self->_cache = [[NSCache alloc] init];
+        [self->_cache setName:kCacheName];
     }
     return self;
 }
@@ -47,7 +52,16 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     if ([self.delegate respondsToSelector:@selector(didBeginRetrieveUsage)])
         [self.delegate didBeginRetrieveUsage];
     
-    // Check cache; return if it hasn't expired yet
+    if (self->_lastRetrieved != nil && [self->_cache objectForKey:kCacheFeedKey] != nil) {
+        NSTimeInterval elapsedTimeSinceLastCache = [self->_lastRetrieved timeIntervalSinceNow];
+        double minutes = elapsedTimeSinceLastCache * 60000;
+        if (minutes <= 15.0) {
+            if ([self.delegate respondsToSelector:@selector(didUseCachedResult)])
+                [self.delegate didUseCachedResult];
+            
+            return [self->_cache objectForKey:kCacheFeedKey];
+        }
+    }
     
     // Don't put the responsibility of account management in this class
     NSString *username = [self.delegate accountUsername];
@@ -107,10 +121,18 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     if ([self.delegate respondsToSelector:@selector(didFinishRetrieveUsage)]) 
         [self.delegate didFinishRetrieveUsage];
     
-    self->_feed = [[iiFeed alloc] initFeedWith:self->_accountInfo volumeUsage:self->_volumeUsage connection:self->_connection];
-    return self->_feed;
+    iiFeed *feed = [[iiFeed alloc] initFeedWith:self->_accountInfo volumeUsage:self->_volumeUsage connection:self->_connection];
+    
+    self->_lastRetrieved = [NSDate date];
+    [self->_cache setObject:feed forKey:kCacheFeedKey];
+    
+    return [self->_cache objectForKey:kCacheFeedKey];
 }
 
+- (void)resetCache {
+    [self->_cache setObject:nil forKey:kCacheFeedKey];
+    self->_lastRetrieved = nil;
+}
 
 #pragma mark - NSXMLParserDelegate
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict {
@@ -118,46 +140,46 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         return;
     
      
-    if ([elementName isEqualToString:@"error"]) {
+    if ([elementName isEqualToString:XMLElementError]) {
         self->_errorFlagged = YES;
         return;
     }
     
-    if ([elementName isEqualToString:@"account_info"]) {
+    if ([elementName isEqualToString:XMLElementAccountInfo]) {
         self->_accountInfo = [[iiAccountInfo alloc] init];        
-        self->_stateTracking = @"account_info";
+        self->_stateTracking = XMLElementAccountInfo;
         
         return;
     }
     
-    if ([elementName isEqualToString:@"volume_usage"] && self->_volumeUsage == nil) {
+    if ([elementName isEqualToString:XMLElementVolumeUsage] && self->_volumeUsage == nil) {
         self->_volumeUsage = [[iiVolumeUsage alloc] init];
-        self->_stateTracking = @"top_level_volume_usage";
+        self->_stateTracking = kStateVolumeUsage;
         return;
     }
     
     if ([self->_stateTracking isEqualToString:kStateVolumeUsage]) {
-        if ([elementName isEqualToString:@"quota_reset"]) {
+        if ([elementName isEqualToString:XMLElementQuotaReset]) {
             self->_volumeUsage.quotaReset = [[iiQuotaReset alloc] init];
-            self->_secondTierStateTracking = @"quota_reset";
+            self->_secondTierStateTracking = XMLElementQuotaReset;
             
             return;
         }
-        if ([elementName isEqualToString:@"expected_traffic_types"]) {
+        if ([elementName isEqualToString:XMLElementExpectedTrafficTypes]) {
             self->_volumeUsage.expectedTrafficList = [[NSMutableArray alloc] init];
-            self->_secondTierStateTracking = @"expected_traffic_types";
+            self->_secondTierStateTracking = XMLElementExpectedTrafficTypes;
             
             return;
         }
-        if ([elementName isEqualToString:@"volume_usage"]) {
+        if ([elementName isEqualToString:XMLElementVolumeUsage]) {
             self->_volumeUsage.volumeUsageBreakdown = [[NSMutableArray alloc] init];
-            self->_secondTierStateTracking = @"volume_usage";
+            self->_secondTierStateTracking = XMLElementVolumeUsage;
         }
         
         
         
         
-        if ([self->_secondTierStateTracking isEqualToString:@"expected_traffic_types"]) {
+        if ([self->_secondTierStateTracking isEqualToString:XMLElementExpectedTrafficTypes]) {
             if ([elementName isEqualToString:@"type"]) {
                 self->_trafficUnit = nil;
                 self->_trafficUnit = [[iiTraffic alloc] init];
@@ -165,7 +187,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
                 self->_trafficUnit.used = [[attributeDict objectForKey:@"used"] integerValue];
             }
         }
-        if ([self->_secondTierStateTracking isEqualToString:@"volume_usage"]) {
+        if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
             if ([elementName isEqualToString:@"day_hour"]) {
                 self->_usagePeriod = nil;
                 self->_usagePeriod = [[iiUsagePeriod alloc] init];
@@ -195,7 +217,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     if (self->_errorFlagged && ![self->_error isEqualToString:@""])
         return;
     
-    if (self->_errorFlagged && [elementName isEqualToString:@"error"])
+    if (self->_errorFlagged && [elementName isEqualToString:XMLElementError])
         self->_error = self->_currentStringValue;
     
     
@@ -203,7 +225,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     self->_currentStringValue = nil;
     
     
-    if ([self->_stateTracking isEqualToString:@"account_info"]) {
+    if ([self->_stateTracking isEqualToString:XMLElementAccountInfo]) {
         if ([elementName isEqualToString:@"plan"])
             self->_accountInfo.plan = currentStringValue;
         
@@ -219,7 +241,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         if ([elementName isEqualToString:@"offpeak_end"]) 
             self->_volumeUsage.offPeakEnd = currentStringValue;
         
-        if ([self->_secondTierStateTracking isEqualToString:@"quota_reset"]) {
+        if ([self->_secondTierStateTracking isEqualToString:XMLElementQuotaReset]) {
             if ([elementName isEqualToString:@"anniversary"])       
                 self->_volumeUsage.quotaReset.anniversary = [currentStringValue  integerValue];
             
@@ -229,13 +251,13 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
             if ([elementName isEqualToString:@"days_remaining"])
                 self->_volumeUsage.quotaReset.daysRemaining = [currentStringValue integerValue];
             
-            if ([elementName isEqualToString:@"quota_reset"])
+            if ([elementName isEqualToString:XMLElementQuotaReset])
                 self->_secondTierStateTracking = @"";
             
             return;
         }
         
-        if ([self->_secondTierStateTracking isEqualToString:@"expected_traffic_types"]) {
+        if ([self->_secondTierStateTracking isEqualToString:XMLElementExpectedTrafficTypes]) {
             if ([elementName isEqualToString:@"quota_allocation"])
                 self->_trafficUnit.quota = [currentStringValue integerValue];
             if ([elementName isEqualToString:@"is_shaped"])
@@ -244,13 +266,13 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
             if ([elementName isEqualToString:@"type"])
                 [self->_volumeUsage.expectedTrafficList addObject:self->_trafficUnit];
             
-            if ([elementName isEqualToString:@"expected_traffic_types"]) 
+            if ([elementName isEqualToString:XMLElementExpectedTrafficTypes]) 
                 self->_secondTierStateTracking = @"";
             
             return;
         }
         
-        if ([self->_secondTierStateTracking isEqualToString:@"volume_usage"]) {
+        if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
             if ([elementName isEqualToString:@"usage"]) {
                 self->_usageUnit.bytes = [currentStringValue integerValue];
                 [self->_usagePeriod.usageUnitList addObject:self->_usageUnit];
@@ -262,7 +284,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         }
         
         
-        if ([self->_secondTierStateTracking isEqualToString:@""] && [elementName isEqualToString:@"volume_usage"])
+        if ([self->_secondTierStateTracking isEqualToString:@""] && [elementName isEqualToString:XMLElementVolumeUsage])
             self->_stateTracking = @"";
         
         return;

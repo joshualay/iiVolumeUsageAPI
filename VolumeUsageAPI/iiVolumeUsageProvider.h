@@ -40,6 +40,8 @@
 
 @interface iiVolumeUsageProvider : NSObject <NSXMLParserDelegate> {
     id<iiVolumeUsageProviderDelegate> _delegate;
+    NSCache *_cache;
+    NSDate *_lastRetrieved;
     
     NSMutableString *_currentStringValue;
 
@@ -53,9 +55,7 @@
     iiTraffic *_trafficUnit;
     iiUsagePeriod *_usagePeriod;
     iiUsageUnit *_usageUnit;
-    
-    iiFeed *_feed;
-    
+        
     BOOL _errorFlagged;
     NSString *_error;
 }
@@ -66,6 +66,6 @@
 + (iiVolumeUsageProvider *)sharedSingleton;
 
 - (iiFeed *)retrieveUsage;
-
+- (void)resetCache;
 
 @end

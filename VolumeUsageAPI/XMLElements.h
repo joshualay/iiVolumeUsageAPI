@@ -7,3 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
+extern NSString *const XMLElementError;
+extern NSString *const XMLElementAccountInfo;
+extern NSString *const XMLElementVolumeUsage;
+extern NSString *const XMLElementQuotaReset;
+extern NSString *const XMLElementExpectedTrafficTypes;
