@@ -113,13 +113,13 @@
 			children = (
 				989F694114F9F43500D46275 /* Constants */,
 				989F691914F3D7BF00D46275 /* Models */,
+				989F693314F7C2DC00D46275 /* iiVolumeUsageProvider.h */,
+				989F693414F7C2DC00D46275 /* iiVolumeUsageProvider.m */,
 				989F690714F3D17300D46275 /* iiAppDelegate.h */,
 				989F690814F3D17300D46275 /* iiAppDelegate.m */,
 				989F690A14F3D17300D46275 /* iiViewController.h */,
 				989F690B14F3D17300D46275 /* iiViewController.m */,
 				989F690D14F3D17300D46275 /* iiViewController.xib */,
-				989F693314F7C2DC00D46275 /* iiVolumeUsageProvider.h */,
-				989F693414F7C2DC00D46275 /* iiVolumeUsageProvider.m */,
 				989F68FF14F3D17300D46275 /* Supporting Files */,
 			);
 			path = VolumeUsageAPI;

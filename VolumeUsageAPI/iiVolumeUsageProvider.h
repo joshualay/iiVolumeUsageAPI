@@ -20,6 +20,8 @@
 @protocol iiVolumeUsageProviderDelegate
 @required
 - (void)didHaveAuthenticationError:(NSString *)message;
+- (NSString *)accountUsername;
+- (NSString *)accountPassword;
 
 @optional
 - (void)didHaveConnectionError:(NSString *)message;
@@ -56,9 +58,6 @@
     
     BOOL _errorFlagged;
     NSString *_error;
-    
-    NSString *_username;
-    NSString *_password;
 }
 
 @property (nonatomic, strong) id delegate;
@@ -67,8 +66,6 @@
 + (iiVolumeUsageProvider *)sharedSingleton;
 
 - (iiFeed *)retrieveUsage;
-- (BOOL)setUserCredentials:(NSString *)username withPassword:(NSString *)password;
-- (void)resetUserCredentials;
-- (BOOL)doesHaveUserCredentials;
+
 
 @end

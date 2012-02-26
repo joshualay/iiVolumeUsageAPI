@@ -8,7 +8,9 @@
 
 #import "iiVolumeUsageProvider.h"
 
+// Constants
 #import "Errors.h"
+
 
 @implementation iiVolumeUsageProvider
 
@@ -16,6 +18,7 @@
 @synthesize delegate    = _delegate;
 
 NSString *kStateVolumeUsage = @"top_level_volume_usage";
+NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volume_usage_xml.cgi?action=login&username=%@&password=%@";
 
 - (id)init {
     self = [super init];
@@ -46,30 +49,39 @@ NSString *kStateVolumeUsage = @"top_level_volume_usage";
     
     // Check cache; return if it hasn't expired yet
     
-    //TODO - Store the credentials in key chain
+    // Don't put the responsibility of account management in this class
+    NSString *username = [self.delegate accountUsername];
+    NSString *password = [self.delegate accountPassword];
+    NSString *urlAuthString = [NSString stringWithFormat:kToolboxAPIUrl, username, password];
     
-    NSURL *toolboxURL = [NSURL URLWithString:@"https://toolbox.iinet.net.au/cgi-bin/new/volume_usage_xml.cgi?action=login&username=fake&password=dddddd"];
+    // Create the URL
+    NSURL *toolboxURL = [NSURL URLWithString:urlAuthString];
     
+    // Create the request 
     NSURLRequest *request = [NSURLRequest requestWithURL:toolboxURL];
     
     NSURLResponse *urlResponse;
     NSError *error;
+    // Send the request synchronously - we need to wait for the response to come back before we can action
     NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlResponse error:&error];
     if (error != nil) {
         if ([self.delegate respondsToSelector:@selector(didHaveConnectionError:)])
             [self.delegate didHaveConnectionError:[error localizedDescription]];
     }
     
+    // Construct the parser object with our NSData
     NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:responseData];
-    
     if (xmlParser != nil) {
         xmlParser.delegate = self;
+        
+        // Run the parser - We implement the delegate methods of the parser to build the object model whilst it parses
         BOOL parsingResult = [xmlParser parse];
         if (!parsingResult) {
             NSError *parsingError = [xmlParser parserError];
             if ([self.delegate respondsToSelector:@selector(didHaveParsingError:)])
                 [self.delegate didHaveParsingError:[parsingError localizedDescription]];
         }
+        // If we've parsed successfully check if we encountered any errors
         else {
             if (self->_errorFlagged) {
                 self->_error = [self->_error stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -97,19 +109,6 @@ NSString *kStateVolumeUsage = @"top_level_volume_usage";
     
     self->_feed = [[iiFeed alloc] initFeedWith:self->_accountInfo volumeUsage:self->_volumeUsage connection:self->_connection];
     return self->_feed;
-}
-
-- (BOOL)setUserCredentials:(NSString *)username withPassword:(NSString *)password {
-        
-    return YES;
-}
-
-- (BOOL)doesHaveUserCredentials {
-    return YES;
-}
-
-- (void)resetUserCredentials {
-    
 }
 
 

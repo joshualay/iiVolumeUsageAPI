@@ -16,4 +16,6 @@
 @property (nonatomic, strong) IBOutlet UITextField *passwordTextField;
 @property (nonatomic, strong) IBOutlet UIButton *button;
 
+- (IBAction)getVolumeUsage:(id)sender;
+
 @end

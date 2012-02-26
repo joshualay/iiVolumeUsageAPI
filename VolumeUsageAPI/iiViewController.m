@@ -23,14 +23,13 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+- (IBAction)getVolumeUsage:(id)sender {
+    [self.usernameTextField resignFirstResponder];
+    [self.passwordTextField resignFirstResponder];
     
-    iiVolumeUsageProvider *volumeUsageProvider = [[iiVolumeUsageProvider alloc] init];
+    iiVolumeUsageProvider *volumeUsageProvider = [iiVolumeUsageProvider sharedSingleton];
+    volumeUsageProvider.delegate = self;
+    
     iiFeed *feed = [volumeUsageProvider retrieveUsage];
     
     iiVolumeUsage *volumeUsage = feed.volumeUsage;
@@ -48,6 +47,16 @@
     self.label.text = textString;
 }
 
+#pragma mark - View lifecycle
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.passwordTextField.secureTextEntry = YES;
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -57,6 +66,14 @@
 #pragma mark - iiVolumeUsageProviderDelegate 
 - (void)didHaveAuthenticationError:(NSString *)message {
     
+}
+
+- (NSString *)accountUsername {
+    return self.usernameTextField.text;
+}
+
+- (NSString *)accountPassword {
+    return self.passwordTextField.text;
 }
 
 @end

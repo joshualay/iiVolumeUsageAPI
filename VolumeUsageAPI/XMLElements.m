@@ -8,6 +8,3 @@
 
 #import "XMLElements.h"
 
-@implementation XMLElements
-
-@end
