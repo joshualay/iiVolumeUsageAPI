@@ -26,6 +26,8 @@
 - (void)didHaveCredentialError:(NSString *)message;
 - (void)didHaveParsingError:(NSString *)message;
 - (void)didHaveXMLConstructionError;
+- (void)didHaveToolboxUnderLoadError:(NSString *)message;
+- (void)didHaveGenericError:(NSString *)messageOrNil;
 
 - (void)didUseCachedResult;
 

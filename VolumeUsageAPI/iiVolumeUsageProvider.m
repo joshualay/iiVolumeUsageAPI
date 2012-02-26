@@ -8,11 +8,14 @@
 
 #import "iiVolumeUsageProvider.h"
 
+#import "Errors.h"
 
 @implementation iiVolumeUsageProvider
 
 @synthesize error       = _error;
 @synthesize delegate    = _delegate;
+
+NSString *kStateVolumeUsage = @"top_level_volume_usage";
 
 - (id)init {
     self = [super init];
@@ -69,8 +72,17 @@
         }
         else {
             if (self->_errorFlagged) {
-                if ([self->_error isEqualToString:@"Authentication failure"]) 
+                self->_error = [self->_error stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                if ([self->_error isEqualToString:ErrorAuthentication]) 
                     [self.delegate didHaveAuthenticationError:self->_error];
+                else if ([self->_error isEqualToString:ErrorToolboxLoad]) {
+                    if ([self.delegate respondsToSelector:@selector(didHaveToolboxUnderLoadError:)])
+                        [self.delegate didHaveToolboxUnderLoadError:self->_error];
+                }
+                else {
+                    if ([self.delegate respondsToSelector:@selector(didHaveGenericError:)])
+                        [self.delegate didHaveGenericError:self->_error];
+                }
             }
         }
     }
@@ -125,7 +137,7 @@
         return;
     }
     
-    if ([self->_stateTracking isEqualToString:@"top_level_volume_usage"]) {
+    if ([self->_stateTracking isEqualToString:kStateVolumeUsage]) {
         if ([elementName isEqualToString:@"quota_reset"]) {
             self->_volumeUsage.quotaReset = [[iiQuotaReset alloc] init];
             self->_secondTierStateTracking = @"quota_reset";
@@ -202,7 +214,7 @@
         return;
     }
     
-    if ([self->_stateTracking isEqualToString:@"top_level_volume_usage"]) {
+    if ([self->_stateTracking isEqualToString:kStateVolumeUsage]) {
         if ([elementName isEqualToString:@"offpeak_start"])
             self->_volumeUsage.offPeakStart = currentStringValue;
         if ([elementName isEqualToString:@"offpeak_end"]) 
