@@ -11,8 +11,6 @@
 
 @implementation iiVolumeUsageProvider
 
-@synthesize accountInfo = _accountInfo;
-@synthesize volumeUsage = _volumeUsage;
 @synthesize error       = _error;
 @synthesize delegate    = _delegate;
 
@@ -21,6 +19,9 @@
     if (self) {
         self->_errorFlagged = NO;
         self->_error = nil;
+        self->_volumeUsage = nil;
+        self->_accountInfo = nil;
+        self->_feed = nil;
     }
     return self;
 }
@@ -36,7 +37,12 @@
     }
 }
 
-- (void)retrieveUsage {
+- (iiFeed *)retrieveUsage {
+    if ([self.delegate respondsToSelector:@selector(didBeginRetrieveUsage)])
+        [self.delegate didBeginRetrieveUsage];
+    
+    // Check cache; return if it hasn't expired yet
+    
     //TODO - Store the credentials in key chain
     
     NSURL *toolboxURL = [NSURL URLWithString:@"https://toolbox.iinet.net.au/cgi-bin/new/volume_usage_xml.cgi?action=login&username=fake&password=dddddd"];
@@ -61,15 +67,37 @@
             if ([self.delegate respondsToSelector:@selector(didHaveParsingError:)])
                 [self.delegate didHaveParsingError:[parsingError localizedDescription]];
         }
-    }    
+        else {
+            if (self->_errorFlagged) {
+                if ([self->_error isEqualToString:@"Authentication failure"]) 
+                    [self.delegate didHaveAuthenticationError:self->_error];
+            }
+        }
+    }
+    else {
+        if ([self.delegate respondsToSelector:@selector(didHaveXMLConstructionError)]) {
+            [self.delegate didHaveXMLConstructionError];
+        }
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(didFinishRetrieveUsage)]) 
+        [self.delegate didFinishRetrieveUsage];
+    
+    self->_feed = [[iiFeed alloc] initFeedWith:self->_accountInfo volumeUsage:self->_volumeUsage connection:self->_connection];
+    return self->_feed;
 }
 
 - (BOOL)setUserCredentials:(NSString *)username withPassword:(NSString *)password {
+        
     return YES;
 }
 
 - (BOOL)doesHaveUserCredentials {
     return YES;
+}
+
+- (void)resetUserCredentials {
+    
 }
 
 

@@ -23,6 +23,7 @@
 		989F692F14F4F56D00D46275 /* iiConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F692E14F4F56D00D46275 /* iiConnection.m */; };
 		989F693214F4F68400D46275 /* iiVolumeUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F693114F4F68400D46275 /* iiVolumeUsage.m */; };
 		989F693514F7C2DC00D46275 /* iiVolumeUsageProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F693414F7C2DC00D46275 /* iiVolumeUsageProvider.m */; };
+		989F694014F9EF1600D46275 /* iiFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F693F14F9EF1600D46275 /* iiFeed.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,8 @@
 		989F693114F4F68400D46275 /* iiVolumeUsage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iiVolumeUsage.m; sourceTree = "<group>"; };
 		989F693314F7C2DC00D46275 /* iiVolumeUsageProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iiVolumeUsageProvider.h; sourceTree = "<group>"; };
 		989F693414F7C2DC00D46275 /* iiVolumeUsageProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iiVolumeUsageProvider.m; sourceTree = "<group>"; };
+		989F693E14F9EF1600D46275 /* iiFeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iiFeed.h; sourceTree = "<group>"; };
+		989F693F14F9EF1600D46275 /* iiFeed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iiFeed.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +147,8 @@
 				989F693114F4F68400D46275 /* iiVolumeUsage.m */,
 				989F692D14F4F56D00D46275 /* iiConnection.h */,
 				989F692E14F4F56D00D46275 /* iiConnection.m */,
+				989F693E14F9EF1600D46275 /* iiFeed.h */,
+				989F693F14F9EF1600D46275 /* iiFeed.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -222,6 +227,7 @@
 				989F692F14F4F56D00D46275 /* iiConnection.m in Sources */,
 				989F693214F4F68400D46275 /* iiVolumeUsage.m in Sources */,
 				989F693514F7C2DC00D46275 /* iiVolumeUsageProvider.m in Sources */,
+				989F694014F9EF1600D46275 /* iiFeed.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

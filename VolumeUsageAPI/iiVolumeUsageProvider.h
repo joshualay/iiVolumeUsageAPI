@@ -15,14 +15,22 @@
 #import "iiUsageUnit.h"
 #import "iiTrafficType.h"
 #import "iiUsagePeriod.h"
+#import "iiFeed.h"
 
 @protocol iiVolumeUsageProviderDelegate
+@required
+- (void)didHaveAuthenticationError:(NSString *)message;
 
 @optional
 - (void)didHaveConnectionError:(NSString *)message;
 - (void)didHaveCredentialError:(NSString *)message;
 - (void)didHaveParsingError:(NSString *)message;
+- (void)didHaveXMLConstructionError;
 
+- (void)didUseCachedResult;
+
+- (void)didBeginRetrieveUsage;
+- (void)didFinishRetrieveUsage;
 @end
 
 
@@ -36,25 +44,29 @@
 
     iiAccountInfo *_accountInfo;
     iiVolumeUsage *_volumeUsage;
+    iiConnection *_connection;
 
     iiTraffic *_trafficUnit;
     iiUsagePeriod *_usagePeriod;
     iiUsageUnit *_usageUnit;
-
+    
+    iiFeed *_feed;
+    
     BOOL _errorFlagged;
     NSString *_error;
+    
+    NSString *_username;
+    NSString *_password;
 }
 
 @property (nonatomic, strong) id delegate;
-
-@property (readonly) iiVolumeUsage *volumeUsage;
-@property (readonly) iiAccountInfo *accountInfo;
 @property (readonly) NSString *error;
 
 + (iiVolumeUsageProvider *)sharedSingleton;
 
-- (void)retrieveUsage;
+- (iiFeed *)retrieveUsage;
 - (BOOL)setUserCredentials:(NSString *)username withPassword:(NSString *)password;
+- (void)resetUserCredentials;
 - (BOOL)doesHaveUserCredentials;
 
 @end

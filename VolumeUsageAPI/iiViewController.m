@@ -11,8 +11,11 @@
 #import "iiVolumeUsageProvider.h"
 #import "iiUsagePeriod.h"
 #import "iiUsageUnit.h"
+#import "iiFeed.h"
 
 @implementation iiViewController
+
+@synthesize label, button, usernameTextField, passwordTextField;
 
 - (void)didReceiveMemoryWarning
 {
@@ -28,9 +31,9 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     iiVolumeUsageProvider *volumeUsageProvider = [[iiVolumeUsageProvider alloc] init];
-    [volumeUsageProvider retrieveUsage];
+    iiFeed *feed = [volumeUsageProvider retrieveUsage];
     
-    iiVolumeUsage *volumeUsage = volumeUsageProvider.volumeUsage;
+    iiVolumeUsage *volumeUsage = feed.volumeUsage;
     
     NSMutableString *textString = [[NSMutableString alloc] init];
     for (iiUsagePeriod *period in volumeUsage.volumeUsageBreakdown) {
@@ -40,15 +43,20 @@
         }
     }
     
-    self->_label.textAlignment = UITextAlignmentCenter;
-    self->_label.numberOfLines = 0;
-    self->_label.text = textString;
+    self.label.textAlignment = UITextAlignmentCenter;
+    self.label.numberOfLines = 0;
+    self.label.text = textString;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
+#pragma mark - iiVolumeUsageProviderDelegate 
+- (void)didHaveAuthenticationError:(NSString *)message {
+    
 }
 
 @end

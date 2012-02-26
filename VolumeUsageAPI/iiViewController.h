@@ -9,8 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "iiVolumeUsageProvider.h"
 
-@interface iiViewController : UIViewController <iiVolumeUsageProviderDelegate> {    
-    IBOutlet UILabel *_label;
-}
+@interface iiViewController : UIViewController <iiVolumeUsageProviderDelegate>
+
+@property (nonatomic, strong) IBOutlet UILabel *label;
+@property (nonatomic, strong) IBOutlet UITextField *usernameTextField;
+@property (nonatomic, strong) IBOutlet UITextField *passwordTextField;
+@property (nonatomic, strong) IBOutlet UIButton *button;
 
 @end
