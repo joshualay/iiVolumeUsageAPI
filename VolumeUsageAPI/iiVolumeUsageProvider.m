@@ -180,26 +180,26 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         
         
         if ([self->_secondTierStateTracking isEqualToString:XMLElementExpectedTrafficTypes]) {
-            if ([elementName isEqualToString:@"type"]) {
+            if ([elementName isEqualToString:XMLElementType]) {
                 self->_trafficUnit = nil;
                 self->_trafficUnit = [[iiTraffic alloc] init];
-                self->_trafficUnit.trafficType = [[attributeDict objectForKey:@"classification"] iiTrafficTypeFromString];
-                self->_trafficUnit.used = [[attributeDict objectForKey:@"used"] integerValue];
+                self->_trafficUnit.trafficType = [[attributeDict objectForKey:XMLElementClassification] iiTrafficTypeFromString];
+                self->_trafficUnit.used = [[attributeDict objectForKey:XMLElementUsed] integerValue];
             }
         }
         if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
-            if ([elementName isEqualToString:@"day_hour"]) {
+            if ([elementName isEqualToString:XMLElementDayHour]) {
                 self->_usagePeriod = nil;
                 self->_usagePeriod = [[iiUsagePeriod alloc] init];
                 
-                self->_usagePeriod.period = [attributeDict objectForKey:@"period"];
+                self->_usagePeriod.period = [attributeDict objectForKey:XMLElementPeriod];
                 self->_usagePeriod.usageUnitList = [[NSMutableArray alloc] init];
             }
-            if ([elementName isEqualToString:@"usage"]) {                
+            if ([elementName isEqualToString:XMLElementUsage]) {                
                 self->_usageUnit = nil;
                 self->_usageUnit = [[iiUsageUnit alloc] init];
                 
-                self->_usageUnit.trafficType = [[attributeDict objectForKey:@"type"] iiTrafficTypeFromString];
+                self->_usageUnit.trafficType = [[attributeDict objectForKey:XMLElementType] iiTrafficTypeFromString];
             }
         }
     }
@@ -226,29 +226,29 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     
     
     if ([self->_stateTracking isEqualToString:XMLElementAccountInfo]) {
-        if ([elementName isEqualToString:@"plan"])
+        if ([elementName isEqualToString:XMLElementPlan])
             self->_accountInfo.plan = currentStringValue;
         
-        if ([elementName isEqualToString:@"product"])
+        if ([elementName isEqualToString:XMLElementProduct])
             self->_accountInfo.product = currentStringValue;
         
         return;
     }
     
     if ([self->_stateTracking isEqualToString:kStateVolumeUsage]) {
-        if ([elementName isEqualToString:@"offpeak_start"])
+        if ([elementName isEqualToString:XMLElementOffpeakStart])
             self->_volumeUsage.offPeakStart = currentStringValue;
-        if ([elementName isEqualToString:@"offpeak_end"]) 
+        if ([elementName isEqualToString:XMLElementOffpeakEnd]) 
             self->_volumeUsage.offPeakEnd = currentStringValue;
         
         if ([self->_secondTierStateTracking isEqualToString:XMLElementQuotaReset]) {
-            if ([elementName isEqualToString:@"anniversary"])       
+            if ([elementName isEqualToString:XMLElementAnniversary])       
                 self->_volumeUsage.quotaReset.anniversary = [currentStringValue  integerValue];
             
-            if ([elementName isEqualToString:@"days_so_far"])
+            if ([elementName isEqualToString:XMLElementDaysSoFar])
                 self->_volumeUsage.quotaReset.daysSoFar = [currentStringValue integerValue];
             
-            if ([elementName isEqualToString:@"days_remaining"])
+            if ([elementName isEqualToString:XMLElementDaysRemaining])
                 self->_volumeUsage.quotaReset.daysRemaining = [currentStringValue integerValue];
             
             if ([elementName isEqualToString:XMLElementQuotaReset])
@@ -258,12 +258,12 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         }
         
         if ([self->_secondTierStateTracking isEqualToString:XMLElementExpectedTrafficTypes]) {
-            if ([elementName isEqualToString:@"quota_allocation"])
+            if ([elementName isEqualToString:XMLElementQuotaAllocation])
                 self->_trafficUnit.quota = [currentStringValue integerValue];
-            if ([elementName isEqualToString:@"is_shaped"])
+            if ([elementName isEqualToString:XMLElementIsShaped])
                 self->_trafficUnit.isShaped = ([currentStringValue isEqualToString:@"true"]) ? YES : NO;
             
-            if ([elementName isEqualToString:@"type"])
+            if ([elementName isEqualToString:XMLElementType])
                 [self->_volumeUsage.expectedTrafficList addObject:self->_trafficUnit];
             
             if ([elementName isEqualToString:XMLElementExpectedTrafficTypes]) 
@@ -273,12 +273,12 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         }
         
         if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
-            if ([elementName isEqualToString:@"usage"]) {
+            if ([elementName isEqualToString:XMLElementUsage]) {
                 self->_usageUnit.bytes = [currentStringValue integerValue];
                 [self->_usagePeriod.usageUnitList addObject:self->_usageUnit];
             }
             
-            if ([elementName isEqualToString:@"day_hour"]) {
+            if ([elementName isEqualToString:XMLElementDayHour]) {
                 [self->_volumeUsage.volumeUsageBreakdown addObject:self->_usagePeriod];
             }
         }
