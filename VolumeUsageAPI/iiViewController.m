@@ -15,7 +15,7 @@
 
 @implementation iiViewController
 
-@synthesize label, button, usernameTextField, passwordTextField;
+@synthesize connectionLabel, button, usernameTextField, passwordTextField, accountLabel, trafficLabel;
 
 - (void)didReceiveMemoryWarning
 {
@@ -35,11 +35,23 @@
     iiConnection *connection = feed.connection;
     iiIpAddress *ipAddress = [connection.ipList lastObject];
     
-    NSString *textString = [NSString stringWithFormat:@"%@, %@", ipAddress.connectedSinceDate, ipAddress.ipAddress];
+    NSString *connectionString = [NSString stringWithFormat:@"%@, %@", ipAddress.connectedSinceDate, ipAddress.ipAddress];
     
-    self.label.textAlignment = UITextAlignmentCenter;
-    self.label.numberOfLines = 0;
-    self.label.text = textString;
+    self.connectionLabel.textAlignment = UITextAlignmentCenter;
+    self.connectionLabel.numberOfLines = 0;
+    self.connectionLabel.text = connectionString;
+    
+    iiAccountInfo *accountInfo = feed.accountInfo;
+    self.accountLabel.text = [NSString stringWithFormat:@"Product: %@, Plan, %@", accountInfo.product, accountInfo.plan];
+    
+    iiVolumeUsage *volumeUsage = feed.volumeUsage;
+    self.trafficLabel.numberOfLines = 0;
+    
+    NSMutableString *trafficString = [[NSMutableString alloc] init];
+    for (iiTraffic *traffic in volumeUsage.expectedTrafficList) {
+        [trafficString appendString:[NSString stringWithFormat:@"Used: %lld, Quota: %i, Type: %i\n", traffic.used, traffic.quota, traffic.trafficType]];
+    }
+    self.trafficLabel.text = trafficString;
 }
 
 #pragma mark - View lifecycle

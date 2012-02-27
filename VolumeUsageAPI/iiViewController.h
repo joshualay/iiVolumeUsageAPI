@@ -11,7 +11,10 @@
 
 @interface iiViewController : UIViewController <iiVolumeUsageProviderDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *label;
+@property (nonatomic, strong) IBOutlet UILabel *connectionLabel;
+@property (nonatomic, strong) IBOutlet UILabel *accountLabel;
+@property (nonatomic, strong) IBOutlet UILabel *trafficLabel;
+
 @property (nonatomic, strong) IBOutlet UITextField *usernameTextField;
 @property (nonatomic, strong) IBOutlet UITextField *passwordTextField;
 @property (nonatomic, strong) IBOutlet UIButton *button;

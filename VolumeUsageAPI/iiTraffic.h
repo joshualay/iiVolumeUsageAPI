@@ -13,7 +13,8 @@
 @interface iiTraffic : NSObject
 
 @property (nonatomic, assign) TrafficType trafficType;
-@property (nonatomic, assign) NSInteger used;
+// Since this is in bytes we can exceed the max integer range
+@property (nonatomic, assign) long long used;
 @property (nonatomic, assign) NSInteger quota;
 @property (nonatomic, assign) BOOL isShaped;
 @property (nonatomic, strong) NSString *shapedSpeed;

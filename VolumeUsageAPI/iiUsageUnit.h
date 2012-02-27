@@ -13,7 +13,7 @@
 @interface iiUsageUnit : NSObject
 
 @property (nonatomic, assign) TrafficType trafficType;
-@property (nonatomic, assign) NSInteger bytes;
+@property (nonatomic, assign) long long bytes;
 
 - (double)getMegaBytes;
 - (double)getGigaBytes;

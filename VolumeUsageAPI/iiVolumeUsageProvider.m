@@ -19,9 +19,10 @@
 
 NSString *const kCacheName = @"VolumeUsageProviderCache";
 NSString *const kCacheFeedKey = @"iiFeedKey";
-
 NSString *kStateVolumeUsage = @"top_level_volume_usage";
 NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volume_usage_xml.cgi?action=login&username=%@&password=%@";
+double const kCacheExpiryMinutes = 15.0;
+NSInteger const kMillisecondsToMinutes = 60000;
 
 - (id)init {
     self = [super init];
@@ -54,8 +55,9 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
     
     if (self->_lastRetrieved != nil && [self->_cache objectForKey:kCacheFeedKey] != nil) {
         NSTimeInterval elapsedTimeSinceLastCache = [self->_lastRetrieved timeIntervalSinceNow];
-        double minutes = elapsedTimeSinceLastCache * 60000;
-        if (minutes <= 15.0) {
+        double minutes = elapsedTimeSinceLastCache * kMillisecondsToMinutes
+;
+        if (minutes <= kCacheExpiryMinutes) {
             if ([self.delegate respondsToSelector:@selector(didUseCachedResult)])
                 [self.delegate didUseCachedResult];
             
@@ -122,6 +124,8 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         [self.delegate didFinishRetrieveUsage];
     
     iiFeed *feed = [[iiFeed alloc] initFeedWith:self->_accountInfo volumeUsage:self->_volumeUsage connection:self->_connection];
+    if (feed == nil)
+        return nil;
     
     self->_lastRetrieved = [NSDate date];
     [self->_cache setObject:feed forKey:kCacheFeedKey];
@@ -184,7 +188,8 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
                 self->_trafficUnit = nil;
                 self->_trafficUnit = [[iiTraffic alloc] init];
                 self->_trafficUnit.trafficType = [[attributeDict objectForKey:XMLElementClassification] iiTrafficTypeFromString];
-                self->_trafficUnit.used = [[attributeDict objectForKey:XMLElementUsed] integerValue];
+                NSString *trafficString = [attributeDict objectForKey:XMLElementUsed];
+                self->_trafficUnit.used = [trafficString longLongValue];
             }
         }
         if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
@@ -288,7 +293,7 @@ NSString *const kToolboxAPIUrl = @"https://toolbox.iinet.net.au/cgi-bin/new/volu
         
         if ([self->_secondTierStateTracking isEqualToString:XMLElementVolumeUsage]) {
             if ([elementName isEqualToString:XMLElementUsage]) {
-                self->_usageUnit.bytes = [currentStringValue integerValue];
+                self->_usageUnit.bytes = [currentStringValue longLongValue];
                 [self->_usagePeriod.usageUnitList addObject:self->_usageUnit];
             }
             
