@@ -83,6 +83,8 @@ NSInteger const kMillisecondsToMinutes = 60000;
     if (error != nil) {
         if ([self.delegate respondsToSelector:@selector(didHaveConnectionError:)])
             [self.delegate didHaveConnectionError:[error localizedDescription]];
+        
+        return nil;
     }
     
     // Construct the parser object with our NSData
@@ -111,6 +113,7 @@ NSInteger const kMillisecondsToMinutes = 60000;
                     if ([self.delegate respondsToSelector:@selector(didHaveGenericError:)])
                         [self.delegate didHaveGenericError:self->_error];
                 }
+                return nil;
             }
         }
     }
@@ -118,6 +121,7 @@ NSInteger const kMillisecondsToMinutes = 60000;
         if ([self.delegate respondsToSelector:@selector(didHaveXMLConstructionError)]) {
             [self.delegate didHaveXMLConstructionError];
         }
+        return nil;
     }
     
     if ([self.delegate respondsToSelector:@selector(didFinishRetrieveUsage)]) 

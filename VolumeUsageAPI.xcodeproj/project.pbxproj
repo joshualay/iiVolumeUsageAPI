@@ -26,6 +26,7 @@
 		989F694014F9EF1600D46275 /* iiFeed.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F693F14F9EF1600D46275 /* iiFeed.m */; };
 		989F694414F9F46E00D46275 /* Errors.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F694314F9F46E00D46275 /* Errors.m */; };
 		989F694F14F9F74600D46275 /* XMLElements.m in Sources */ = {isa = PBXBuildFile; fileRef = 989F694E14F9F74500D46275 /* XMLElements.m */; };
+		989F698114FBB2CD00D46275 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 989F698014FBB2CD00D46275 /* README */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		989F694314F9F46E00D46275 /* Errors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Errors.m; sourceTree = "<group>"; };
 		989F694D14F9F74500D46275 /* XMLElements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLElements.h; sourceTree = "<group>"; };
 		989F694E14F9F74500D46275 /* XMLElements.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLElements.m; sourceTree = "<group>"; };
+		989F698014FBB2CD00D46275 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 				989F690B14F3D17300D46275 /* iiViewController.m */,
 				989F690D14F3D17300D46275 /* iiViewController.xib */,
 				989F68FF14F3D17300D46275 /* Supporting Files */,
+				989F698014FBB2CD00D46275 /* README */,
 			);
 			path = VolumeUsageAPI;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 			files = (
 				989F690314F3D17300D46275 /* InfoPlist.strings in Resources */,
 				989F690F14F3D17300D46275 /* iiViewController.xib in Resources */,
+				989F698114FBB2CD00D46275 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

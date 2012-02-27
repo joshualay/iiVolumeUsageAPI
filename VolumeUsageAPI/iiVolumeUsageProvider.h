@@ -19,20 +19,34 @@
 
 @protocol iiVolumeUsageProviderDelegate
 @required
+// User has entered in the incorrect username and password
+// You'd perform some error handling process to prompt again
 - (void)didHaveAuthenticationError:(NSString *)message;
+/* 
+ AUTHENTICATION METHODS
+ 
+I'm not storing any authentication details in the provider. I feel it's better separated out from this code.
+ */
+// Provide the username to the Provider
 - (NSString *)accountUsername;
+// Provide the password to the Provider
 - (NSString *)accountPassword;
 
 @optional
+// Couldn't perform the URL request
 - (void)didHaveConnectionError:(NSString *)message;
-- (void)didHaveCredentialError:(NSString *)message;
+// For some reason the XML iiNet has returned is malformed
 - (void)didHaveParsingError:(NSString *)message;
+// Couldn't create an NSXMLParser with the NSData response
 - (void)didHaveXMLConstructionError;
+// 
 - (void)didHaveToolboxUnderLoadError:(NSString *)message;
 - (void)didHaveGenericError:(NSString *)messageOrNil;
 
+// When iiFeed is read from the cache - in case you want to flag
 - (void)didUseCachedResult;
 
+// If you want to put a loading sequence whilst the usage is being retrieved and processed
 - (void)didBeginRetrieveUsage;
 - (void)didFinishRetrieveUsage;
 @end
