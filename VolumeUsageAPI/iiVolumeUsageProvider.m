@@ -138,7 +138,7 @@ NSInteger const kMillisecondsToMinutes = 60000;
 }
 
 - (void)resetCache {
-    [self->_cache setObject:nil forKey:kCacheFeedKey];
+    [self->_cache removeObjectForKey:kCacheFeedKey];
     self->_lastRetrieved = nil;
 }
 
