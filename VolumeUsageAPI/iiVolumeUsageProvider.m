@@ -237,7 +237,7 @@ NSInteger const kMillisecondsToMinutes = 60000;
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-    if (self->_errorFlagged && ![self->_error isEqualToString:@""])
+    if (self->_errorFlagged && self->_error != nil)
         return;
     
     if (self->_errorFlagged && [elementName isEqualToString:XMLElementError])
