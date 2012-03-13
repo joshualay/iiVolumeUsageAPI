@@ -65,6 +65,9 @@ NSInteger const kMillisecondsToMinutes = 60000;
         }
     }
     
+    self->_errorFlagged = NO;
+    self->_error = nil;
+    
     // Don't put the responsibility of account management in this class
     NSString *username = [self.delegate accountUsername];
     NSString *password = [self.delegate accountPassword];
